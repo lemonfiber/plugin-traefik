@@ -1,4 +1,4 @@
-# AGENTS.md — plugin-template
+# AGENTS.md — plugin-traefik
 
 > **Start at the roadmap and board on [lemonfiber.app](https://lemonfiber.app),
 > rendered from the report of where every unreleased version stands. Then the
@@ -9,55 +9,55 @@
 
 ## What this repo is
 
-The plugin an author copies, and the **canonical home of the CI harness**.
-`plugin-komga`, `plugin-uptime-kuma`, `plugin-plex` and `lemonfiber-plugins` carry
-byte-identical copies of `.github/reader/`, and the ones with a `harness` job fail
-when their copy drifts from this one. Change the harness here, then copy it out;
-changing it there fails.
-
-The plugin itself describes Kavita, and it describes something real on purpose:
-`F10-R7` asks for a template that validates and proves *unmodified*, and a
-template whose proofs are invented teaches an author to invent proofs.
-
-`bundled-part/` is the variant a first-party part of the stack starts from: one
-service, no adapter and no Python, its CI spec's `first-party-plugin` workflow.
-It describes SABnzbd as the stack carries it. `docs/development.md` says what a
-part's repository takes from it.
-
-`built-part/` is the variant for a part whose image lemonfiber builds from its
-upstream's, published and pinned by spec's `first-party-image` workflow. It
-describes Door, built from Caddy with the file capability taken off its binary.
+Traefik as a first-party lemonfiber plugin: `plugin.toml`, its starting files
+under `config/traefik/`, and the adapter that speaks the `proxy.front@1`
+contract in front of Traefik, the second proxy, which stands in for Caddy where
+`F14-R31` proves `proxy.front` by a substitute. The adapter is the Rust crate at
+the root, built on `lemonfiber-adapter-kit` from the core at the commit
+`Cargo.toml` pins, into the image the `Dockerfile` builds. `release.yml`
+publishes that image from every commit on `main` and from the train's tag.
 
 ## The rules you cannot break
 
-- **Nothing here executes.** A plugin is declarative data (`F3-R1`), and
-  contributed code is never run, under any opt-in (`F3-R6`). The Python under
-  `.github/reader/` is CI harness and is not part of what an operator installs:
-  it fetches the lemonfiber release `targets.toml` names, or builds the commit
-  of `main` it names, and asks it.
-- **The plugin is `plugin.toml` and `fixtures/`.** Proofs, claims and
-  contributions live in the manifest, not beside it: an installer reads one file,
-  and something the installer never reads cannot be what `F3-R4` refuses an
-  install over.
-- **The image is named by digest** (`F3-R8`). Moving the pin means re-recording
-  every fixture against the new image in the same change.
-- **A proof asserts a body, never only a status.** Docker's port proxy accepts
-  before anything inside is listening. The one exception is a refusal: a `401`
-  is not something a port proxy can produce.
-- **A proof that could not be run is unproven** (`F3-R5`), never a pass, and
-  no declaration excuses it (`F10-R16`). Failing as declared is its own
-  verdict, written apart from passed and failed and never counted as passed
-  (`F10-R13`).
-- **Sonar's ignores live in the SonarCloud project, never in a file here.**
-  Automatic analysis reads no issue ignore from the repository, so a repository
-  made from this one needs `docker:S8431` ignored on `**/Dockerfile*` in its
-  project's settings: every image is named by tag and digest (ADR-0025).
-- **No field beyond the contract's set.** A manifest carrying one is refused by
-  name rather than ignored (`ARCH-R84`).
-- **The format is lemonfiber's to describe, and nothing here describes it.**
-  `reader.py` carries no list of tables, fields, kinds, closed sets or capability
-  names, and decides no verdict: `F10-R2` forbids a second description of the
-  format, and every verdict CI reports is `lemonfiber plugin claims`'s own.
+- **The plugin id is the service's id** (`ARCH-R266`). The container, the
+  configuration directory, the settings and the journal keep their names.
+- **There is no `replaces`.** Traefik is a substitute, offered beside Caddy,
+  not a move in place, so it holds host ports of its own: 8080 for plain HTTP
+  and 8443 for HTTPS, which Traefik listens on too.
+- **Traefik runs its upstream's image as the operator's uid** (`user_mode =
+  "uid"`), under the standard posture, as Caddy's rebuilt image does. The proof
+  `traefik.holds-no-privilege` holds it to running as a user that is not root,
+  with no capability it holds, may take up or passes on, and no-new-privileges
+  set.
+- **Its proofs' recordings sit under `recordings/traefik/`**, and its starting
+  files under `config/traefik/` (`ARCH-R271`).
+- **Every service declares `reaches` and `asks_for`** (`ARCH-R270`).
+- **The reader is spec's `first-party-plugin` workflow's,** and lemonfiber
+  records the recordings itself. There is no Python here.
+- **No `unwrap`, `expect`, `panic` or indexing** outside tests. The lints in
+  `Cargo.toml` are the core's.
+- **Traefik reads `traefik.toml` once and watches `dynamic.toml`.** Its
+  configuration directory is mounted read-only (`config_ro`). `traefik.toml`
+  turns the API, the dashboard, the update check and usage data off and names
+  the file provider as the only provider. The adapter writes `dynamic.toml`
+  and the table it came from, `routing.json`, through
+  `lemonfiber_adapter_kit::shared`, and `apply` and `reload` answer that the
+  table is in force at once. A configuration that is not the one rendered from
+  the table is refused, not served, and `reload` writes it again from the
+  table. Traefik refuses an empty router table, so a table with no route is
+  written as no `http` section at all.
+- **Every value is held to its grammar before anything is written**: a name is
+  a DNS name, never a wildcard and never the name of two routes; a host is a DNS
+  name or an IPv4 address; a port is not zero; a certificate or key is a plain
+  file beneath the configuration directory and never Traefik's or the
+  adapter's own files.
+- **The core's crates move with the train.** The `rev` in `Cargo.toml` is the
+  core commit `targets.toml` names, the same for every `lemonfiber-*` crate.
+- **Moving Traefik's digest** means recording every proof again against the
+  new image in the same change, moving `RELEASE` and `DIGEST` in
+  `src/adapter.rs` with it, and committing the `proofs.json` the checks write;
+  `tests/manifest.rs` fails until they name the image the manifest's `traefik`
+  runs.
 
 ## Checks
 
@@ -65,13 +65,5 @@ describes Door, built from Caddy with the file capability taken off its binary.
 just ci
 ```
 
-Every gate CI runs over the contents of this repository, in CI's order. The jobs
-it leaves out are named in the `justfile` beside the recipe, with what covers
-each. `just` lists the recipes it is made of.
-
-`proofs.json` is generated and committed; CI fails when the committed one is not
-what the run would write. `reader.py proofs` writes it on every run.
-
-## Before you open a PR
-
-`just ci` turns this clone's git hooks on as its first step.
+The gates that need nothing but this tree. The plugin verdict and the
+recordings run in CI.

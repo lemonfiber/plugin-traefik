@@ -1,34 +1,22 @@
 {
-  "lemonfiber": "0.16.0",
+  "lemonfiber": "ec332f86b6c4a0653264bb171c62f545db29c2e4",
   "against": "recordings",
   "proofs": [
     {
-      "id": "kavita.serves",
+      "id": "traefik.redirects-plain-http",
       "kind": "proof",
       "outcome": "passed",
       "detail": ""
     },
     {
-      "id": "kavita.status-is-not-an-answer",
+      "id": "traefik.version",
       "kind": "proof",
       "outcome": "passed",
       "detail": ""
     },
     {
-      "id": "media.serve/guarded",
-      "kind": "probe",
-      "outcome": "passed",
-      "detail": ""
-    },
-    {
-      "id": "media.serve/catalogue",
-      "kind": "probe",
-      "outcome": "passed",
-      "detail": ""
-    },
-    {
-      "id": "kavita:settings-guarded",
-      "kind": "check",
+      "id": "traefik.holds-no-privilege",
+      "kind": "proof",
       "outcome": "passed",
       "detail": ""
     }
