@@ -32,6 +32,23 @@ config_ro   = true
 port    = 8443
 listens = 8443
 
+[[service]]
+id            = "traefik-adapter"
+name          = "Traefik adapter"
+image         = "ghcr.io/lemonfiber/traefik-adapter"
+digest        = "sha256:e5193bc859d988d5bb18a81ce35af6fae96ed4587d4a9f6d61d9df3da833c575"
+tag           = "main-b912501e6a02"
+criticality   = "optional"
+reaches       = ""
+asks_for      = "Nothing beyond this machine. It answers lemonfiber's proxy.front contract by writing the routes lemonfiber hands it into the dynamic configuration Traefik, beside it, watches and takes up at once."
+config_path   = "/config"
+listens       = 8080
+speaks        = ["proxy.front@1"]
+fronts        = "traefik"
+provides      = ["proxy.front"]
+shares_config = "/traefik"
+posture       = "confined"
+
 [[proof]]
 id      = "traefik.redirects-plain-http"
 service = "traefik"

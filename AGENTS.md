@@ -17,10 +17,21 @@ the root, built on `lemonfiber-adapter-kit` from the core at the commit
 `Cargo.toml` pins, into the image the `Dockerfile` builds. `release.yml`
 publishes that image from every commit on `main` and from the train's tag.
 
+`conformance/` holds one recording per case of `proxy.front@1`.
+`lemonfiber plugin record .`, at the commit `targets.toml` names, writes them
+against a throwaway Traefik at the digest `plugin.toml` pins and the adapter it
+pins; CI takes every recording again with the adapter built from this tree.
+Re-record whenever the adapter's answers or either digest change.
+`tests/conformance.rs` reads every recording with the core's own client.
+
 ## The rules you cannot break
 
 - **The plugin id is the service's id** (`ARCH-R266`). The container, the
   configuration directory, the settings and the journal keep their names.
+- **Two services: `traefik` and `traefik-adapter`.** `traefik-adapter` fronts
+  Traefik, speaks `proxy.front@1`, provides `proxy.front` and shares Traefik's
+  configuration directory at `/traefik` (`ARCH-R339`), under the confined
+  posture.
 - **There is no `replaces`.** Traefik is a substitute, offered beside Caddy,
   not a move in place, so it holds host ports of its own: 8080 for plain HTTP
   and 8443 for HTTPS, which Traefik listens on too.
@@ -53,11 +64,11 @@ publishes that image from every commit on `main` and from the train's tag.
   adapter's own files.
 - **The core's crates move with the train.** The `rev` in `Cargo.toml` is the
   core commit `targets.toml` names, the same for every `lemonfiber-*` crate.
-- **Moving Traefik's digest** means recording every proof again against the
-  new image in the same change, moving `RELEASE` and `DIGEST` in
-  `src/adapter.rs` with it, and committing the `proofs.json` the checks write;
-  `tests/manifest.rs` fails until they name the image the manifest's `traefik`
-  runs.
+- **Moving Traefik's digest** means recording every proof and conformance case
+  again against the new image in the same change, moving `RELEASE` and `DIGEST`
+  in `src/adapter.rs` with it, and committing the `proofs.json` the checks
+  write; `tests/manifest.rs` fails until they name the image the manifest's
+  `traefik` runs.
 
 ## Checks
 
