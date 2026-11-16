@@ -20,8 +20,9 @@ the image `ghcr.io/lemonfiber/traefik-adapter`, published from every commit on
 certificates the core hands it as `dynamic.toml` into Traefik's configuration
 directory, which it shares and Traefik only reads. Traefik's file provider
 watches that file and serves what it says at once, with no restart. Traefik's
-API and dashboard are off, and it checks for no new release and sends no usage
-data.
+API and dashboard are off. On plain HTTP it answers `/ping`, which its health
+check asks, and sends everything else to HTTPS. It checks for no new release and
+sends no usage data.
 
 ## What is here
 

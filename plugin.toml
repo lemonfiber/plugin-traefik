@@ -19,7 +19,7 @@ tag         = "v3.7.19"
 port        = 8080
 bind        = "lan"
 listens     = 8080
-health      = { kind = "tcp", timeout_s = 30 }
+health      = { kind = "http", path = "/ping", timeout_s = 30 }
 criticality = "optional"
 memory_mib  = 100
 reaches     = ""
@@ -61,6 +61,35 @@ HTTPS entry point on. A plain-HTTP answer of anything else would mean a name
 served without TLS.
 """
 request = { method = "GET", path = "/" }
+expect  = { status = 301 }
+
+[[proof]]
+id      = "traefik.ready-on-ping"
+service = "traefik"
+title   = "Traefik answers its ping on plain HTTP once its first configuration is built"
+fixture = "recordings/traefik/ping.json"
+why     = """
+Traefik listens before its first configuration is built, and until then it
+answers every request 404, the redirect to HTTPS included. Its ping arrives
+in that same configuration, so the health check asks it: Traefik counts as
+healthy only once it serves the redirect. A port proxy answers no body, so the
+body Traefik's ping writes is what says Traefik answered.
+"""
+request = { method = "GET", path = "/ping" }
+expect  = { status = 200, body_starts_with = "OK" }
+
+[[proof]]
+id      = "traefik.serves-no-api"
+service = "traefik"
+title   = "Traefik's API is not served on plain HTTP: it is sent to HTTPS like any page"
+fixture = "recordings/traefik/api-is-redirected.json"
+why     = """
+Traefik's API and dashboard are off, and ping is the one handler of its own
+the plain-HTTP entry point serves. Asked for the API's whole configuration
+there, Traefik answers with the same permanent redirect to HTTPS it gives any
+household name, so nothing of its routes or services is read from it.
+"""
+request = { method = "GET", path = "/api/rawdata" }
 expect  = { status = 301 }
 
 [[proof]]

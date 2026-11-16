@@ -50,13 +50,15 @@ Re-record whenever the adapter's answers or either digest change.
 - **Traefik reads `traefik.toml` once and watches `dynamic.toml`.** Its
   configuration directory is mounted read-only (`config_ro`). `traefik.toml`
   turns the API, the dashboard, the update check and usage data off and names
-  the file provider as the only provider. The adapter writes `dynamic.toml`
-  and the table it came from, `routing.json`, through
-  `lemonfiber_adapter_kit::shared`, and `apply` and `reload` answer that the
-  table is in force at once. A configuration that is not the one rendered from
-  the table is refused, not served, and `reload` writes it again from the
-  table. Traefik refuses an empty router table, so a table with no route is
-  written as no `http` section at all.
+  the file provider as the only provider. It answers `/ping` on the plain-HTTP
+  entry point, which its health check asks: ping arrives with the redirect in
+  Traefik's first configuration, so it counts healthy only once that redirect is
+  served. The adapter writes `dynamic.toml` and the table it came from,
+  `routing.json`, through `lemonfiber_adapter_kit::shared`, and `apply` and
+  `reload` answer that the table is in force at once. A configuration that is
+  not the one rendered from the table is refused, not served, and `reload`
+  writes it again from the table. Traefik refuses an empty router table, so a
+  table with no route is written as no `http` section at all.
 - **Every value is held to its grammar before anything is written**: a name is
   a DNS name, never a wildcard and never the name of two routes; a host is a DNS
   name or an IPv4 address; a port is not zero; a certificate or key is a plain
