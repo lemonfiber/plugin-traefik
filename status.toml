@@ -11,6 +11,8 @@
 requirement = [
   { id = "ARCH-R250", state = "partial", evidence = [".github/workflows/adapter.yml", "recordings/traefik/holds-no-privilege.json"] },
   { id = "F14-R1", state = "open" },
+  { id = "F14-R6", state = "partial", evidence = ["src/adapter.rs", "tests/conformance.rs::every_case_of_every_contract_spoken_is_recorded_and_read_as_the_core_reads_it"] },
+  { id = "F14-R13", state = "partial", evidence = ["src/adapter.rs", "tests/manifest.rs::the_adapter_names_the_image_of_the_traefik_it_fronts"] },
   { id = "F14-R15", state = "partial", evidence = ["Cargo.toml", "Dockerfile", ".github/workflows/release.yml"] },
   { id = "F14-R27", state = "partial", evidence = ["Dockerfile", ".github/workflows/adapter.yml", "recordings/traefik/holds-no-privilege.json"] },
   { id = "F14-R31", state = "partial", evidence = ["plugin.toml", "config/traefik/traefik.toml", "src/traefik.rs", "src/traefik/config.rs"] },

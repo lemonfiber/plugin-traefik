@@ -20,13 +20,17 @@ fn starting() -> Table {
         .unwrap_or_default()
 }
 
-fn service(manifest: &Table, id: &str) -> Table {
+fn services(manifest: &Table) -> impl Iterator<Item = &Table> {
     manifest
         .get("service")
         .and_then(Value::as_array)
         .into_iter()
         .flatten()
         .filter_map(Value::as_table)
+}
+
+fn service(manifest: &Table, id: &str) -> Table {
+    services(manifest)
         .find(|service| service.get("id").and_then(Value::as_str) == Some(id))
         .cloned()
         .unwrap_or_default()
@@ -62,24 +66,51 @@ fn the_pinned_core_refuses_nothing_in_the_manifest() {
     assert!(refused.is_empty(), "{refused:#?}");
 }
 
+fn adapter(manifest: &Table) -> Table {
+    services(manifest)
+        .find(|service| service.contains_key("speaks"))
+        .cloned()
+        .unwrap_or_default()
+}
+
 #[test]
 fn the_adapter_names_the_image_of_the_traefik_it_fronts() {
-    let traefik = service(&manifest(), "traefik");
+    let manifest = manifest();
+    let fronted = adapter(&manifest)
+        .get("fronts")
+        .and_then(Value::as_str)
+        .map(|id| service(&manifest, id))
+        .unwrap_or_default();
     let named: Vec<String> = traefik_adapter::adapter::about()
         .releases
         .into_iter()
         .map(|release| release.digest)
         .collect();
 
+    assert_eq!(fronted.get("id").and_then(Value::as_str), Some("traefik"));
     assert_eq!(
-        traefik.get("digest").and_then(Value::as_str),
+        fronted.get("digest").and_then(Value::as_str),
         Some(traefik_adapter::adapter::DIGEST)
     );
     assert_eq!(
-        traefik.get("tag").and_then(Value::as_str),
+        fronted.get("tag").and_then(Value::as_str),
         Some(traefik_adapter::adapter::RELEASE)
     );
     assert_eq!(named, vec![traefik_adapter::adapter::DIGEST.to_owned()]);
+}
+
+#[test]
+fn the_adapter_writes_traefiks_configuration_where_it_shares_it_and_holds_nothing_else() {
+    let adapter = adapter(&manifest());
+
+    assert_eq!(
+        adapter.get("shares_config").and_then(Value::as_str),
+        Some(traefik_adapter::adapter::ADDRESS)
+    );
+    assert_eq!(
+        adapter.get("posture").and_then(Value::as_str),
+        Some("confined")
+    );
 }
 
 #[test]
