@@ -9,6 +9,18 @@
       "detail": ""
     },
     {
+      "id": "traefik.ready-on-ping",
+      "kind": "proof",
+      "outcome": "passed",
+      "detail": ""
+    },
+    {
+      "id": "traefik.serves-no-api",
+      "kind": "proof",
+      "outcome": "passed",
+      "detail": ""
+    },
+    {
       "id": "traefik.version",
       "kind": "proof",
       "outcome": "passed",

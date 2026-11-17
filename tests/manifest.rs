@@ -183,12 +183,31 @@ fn traefik_listens_where_the_manifest_publishes_and_sends_plain_http_to_https() 
 }
 
 #[test]
+fn traefik_is_healthy_once_it_answers_ping_on_the_plain_http_entry_point_alone() {
+    let traefik = service(&manifest(), "traefik");
+    let health = traefik
+        .get("health")
+        .and_then(Value::as_table)
+        .cloned()
+        .unwrap_or_default();
+
+    assert_eq!(health.get("kind").and_then(Value::as_str), Some("http"));
+    assert_eq!(health.get("path").and_then(Value::as_str), Some("/ping"));
+    assert_eq!(
+        starting().get("ping").and_then(Value::as_table).cloned(),
+        Some(Table::from_iter([(
+            "entryPoint".to_owned(),
+            Value::from("web")
+        )]))
+    );
+}
+
+#[test]
 fn traefik_serves_no_api_or_dashboard_and_reaches_nothing_of_its_own() {
     let starting = starting();
 
     for reaching in [
         "api",
-        "ping",
         "metrics",
         "tracing",
         "experimental",
