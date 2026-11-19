@@ -67,10 +67,10 @@ Re-record whenever the adapter's answers or either digest change.
 - **The core's crates move with the train.** The `rev` in `Cargo.toml` is the
   core commit `targets.toml` names, the same for every `lemonfiber-*` crate.
 - **Moving Traefik's digest** means recording every proof and conformance case
-  again against the new image in the same change, moving `RELEASE` and `DIGEST`
-  in `src/adapter.rs` with it, and committing the `proofs.json` the checks
-  write; `tests/manifest.rs` fails until they name the image the manifest's
-  `traefik` runs.
+  again against the new image in the same change, moving its `tag` with it
+  (`build.rs` reads `RELEASE` and `DIGEST` from `plugin.toml`, their one home),
+  and committing the `proofs.json` the checks write; `tests/manifest.rs` fails
+  until they name the image the manifest's `traefik` runs.
 
 ## Checks
 

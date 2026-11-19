@@ -23,6 +23,9 @@ serde_json = "1"
 tokio = { version = "1", features = ["fs", "macros", "net", "rt-multi-thread", "signal", "time"] }
 toml = "1.1"
 
+[build-dependencies]
+toml = "1.1"
+
 [dev-dependencies]
 axum = { version = "0.8", default-features = false, features = ["http1", "tokio", "json"] }
 tokio = { version = "1", features = ["test-util"] }
