@@ -14,11 +14,7 @@ pub const ADDRESS: &str = "/traefik";
 /// The upstream this adapter fronts, as its project names itself.
 pub const UPSTREAM: &str = "Traefik";
 
-/// The Traefik release this adapter's recordings were taken from.
-pub const RELEASE: &str = "v3.7.19";
-
-/// The digest of the image that release's recordings were taken from.
-pub const DIGEST: &str = "sha256:aa942a00bce033c909bf1f7e861d93761be4b31a035f10d2410d33e38a8f41cf";
+include!(concat!(env!("OUT_DIR"), "/fronted.rs"));
 
 /// What this adapter says it is: the contract it speaks and the release it supports.
 #[must_use]
