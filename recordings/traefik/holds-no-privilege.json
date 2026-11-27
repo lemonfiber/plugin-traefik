@@ -1,5 +1,5 @@
 {
-  "recorded_from": "docker.io/library/traefik@sha256:a6c0194dda77bcb804824580f36fa7edc56e315b1acfe933366c8b52844a78a4",
+  "recorded_from": "docker.io/library/traefik@sha256:00c9734983e74ae35a1fc18eaee9e9da13f3dde95c4e45b3b8c3b60e0dbd2d17",
   "note": "Run in the container lemonfiber makes for the service, as the operator's user under its posture with no network: it exits 0 only as a user that is not root, holds, may take up and passes on no capability, and has no-new-privileges set, so its permitted set can never grow. The uid, gid and bounding set it ran with follow.",
   "run": {
     "args": ["sh", "-c", "test \"$(id -u)\" -ne 0 && test \"$(id -g)\" -ne 0 && grep -E '^(Cap(Prm|Eff|Amb)|NoNewPrivs):' /proc/self/status && grep -E '^(Uid|Gid|CapBnd):' /proc/self/status"]

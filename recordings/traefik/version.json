@@ -1,8 +1,8 @@
 {
-  "recorded_from": "docker.io/library/traefik@sha256:a6c0194dda77bcb804824580f36fa7edc56e315b1acfe933366c8b52844a78a4",
+  "recorded_from": "docker.io/library/traefik@sha256:00c9734983e74ae35a1fc18eaee9e9da13f3dde95c4e45b3b8c3b60e0dbd2d17",
   "note": "The pinned image's own Traefik, run as the operator's user with no network, names its release; only that line of what it prints is kept, since the rest names the machine's architecture.",
   "run": {
     "args": ["sh", "-c", "set -o pipefail; traefik version | grep '^Version:'"]
   },
-  "result": {"exit": 0, "stdout_starts_with": "Version:      3.7.19\n"}
+  "result": {"exit": 0, "stdout_starts_with": "Version:      3.8.0\n"}
 }
