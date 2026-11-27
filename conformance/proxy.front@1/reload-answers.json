@@ -1,5 +1,5 @@
 {
-  "recorded_from": "docker.io/library/traefik@sha256:a6c0194dda77bcb804824580f36fa7edc56e315b1acfe933366c8b52844a78a4",
+  "recorded_from": "docker.io/library/traefik@sha256:00c9734983e74ae35a1fc18eaee9e9da13f3dde95c4e45b3b8c3b60e0dbd2d17",
   "note": "The dynamic configuration written again from the table applied, which Traefik's file provider takes up at once.",
   "request": {"method": "POST", "path": "/lemonfiber/proxy.front/v1/reload", "accept": "application/json"},
   "response": {

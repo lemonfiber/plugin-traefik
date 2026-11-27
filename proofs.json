@@ -23,8 +23,8 @@
     {
       "id": "traefik.version",
       "kind": "proof",
-      "outcome": "passed",
-      "detail": ""
+      "outcome": "failed",
+      "detail": "its output begins \"Version:      3.8.0\", and it declares \"Version:      3.7.19\""
     },
     {
       "id": "traefik.holds-no-privilege",
